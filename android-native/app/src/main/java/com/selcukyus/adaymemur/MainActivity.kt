@@ -73,6 +73,14 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
 
     private val bekleyenIlan = MutableStateFlow<String?>(null)
+    private val bekleyenSekme = MutableStateFlow<Int?>(null)
+
+    /** Yalnızca debug derlemede: otomatik ekran görüntüsü testleri için kısayollar. */
+    private fun testKisayollari(i: Intent?) {
+        if (!BuildConfig.DEBUG || i == null) return
+        if (i.getBooleanExtra("atla", false)) Depo.ayarlar.guncelle { it.copy(karsilamaGoruldu = true) }
+        if (i.hasExtra("sekme")) bekleyenSekme.value = i.getIntExtra("sekme", 0)
+    }
     private val izin = registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
     private fun bildirimIzniIste() {
@@ -83,18 +91,20 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        testKisayollari(intent)
         bekleyenIlan.value = intent?.getStringExtra("ilanId")
         lifecycleScope.launch { Depo.yenile() }
         Reklam.baslat(this)
         setContent {
             AdayMemurTema {
-                Uygulama(bekleyenIlan, ::bildirimIzniIste)
+                Uygulama(bekleyenIlan, bekleyenSekme, ::bildirimIzniIste)
             }
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        testKisayollari(intent)
         intent.getStringExtra("ilanId")?.let { bekleyenIlan.value = it }
     }
 
@@ -126,7 +136,7 @@ private val SEKMELER = listOf(
 )
 
 @Composable
-private fun Uygulama(bekleyenIlan: MutableStateFlow<String?>, bildirimIzniIste: () -> Unit) {
+private fun Uygulama(bekleyenIlan: MutableStateFlow<String?>, bekleyenSekme: MutableStateFlow<Int?>, bildirimIzniIste: () -> Unit) {
     val p = T.p
     val nav = rememberNavController()
     var sekme by remember { mutableIntStateOf(0) }
@@ -141,6 +151,14 @@ private fun Uygulama(bekleyenIlan: MutableStateFlow<String?>, bildirimIzniIste: 
 
     LaunchedEffect(proMesaj) { proMesaj?.let { bildir(it); Pro.mesajOkundu() } }
     LaunchedEffect(ilanId) { ilanId?.let { git.ilan(it); bekleyenIlan.value = null } }
+    val sekmeIstegi by bekleyenSekme.collectAsState()
+    LaunchedEffect(sekmeIstegi) {
+        sekmeIstegi?.let {
+            sekme = it
+            if (nav.currentDestination?.route != "sekmeler") nav.navigate("sekmeler") { popUpTo(0) }
+            bekleyenSekme.value = null
+        }
+    }
 
     Scaffold(
         containerColor = p.paper,
