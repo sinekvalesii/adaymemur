@@ -1,0 +1,6 @@
+_site/
+__pycache__/
+*.pyc
+.pytest_cache/
+pipeline/state*.json.gz
+design/preview/

@@ -1,0 +1,67 @@
+# Resmî kaynakları tarar, ilan verisini ve web sayfalarını GitHub Pages'e yayınlar, bildirim gönderir.
+name: Veri güncelleme
+
+on:
+  schedule:
+    - cron: "7,37 * * * *"   # her 30 dakikada bir
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["pipeline/**", "content/**", "web/**", ".github/workflows/veri.yml"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: veri
+  cancel-in-progress: false
+
+jobs:
+  guncelle:
+    # Türkiye'de çalışan kendi bilgisayarını "self-hosted runner" olarak eklersen
+    # repo değişkeni RUNNER=self-hosted yap: Kariyer Kapısı metinleri de sunucuda işlenir.
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 25
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    env:
+      SITE_URL: ${{ vars.SITE_URL || format('https://{0}.github.io/{1}', github.repository_owner, github.event.repository.name) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pipeline/requirements.txt
+
+      - name: Bağımlılıklar
+        run: pip install -r pipeline/requirements.txt
+
+      - name: İlanları topla
+        working-directory: pipeline
+        env:
+          STATE_URL: ${{ env.SITE_URL }}/data/_state.json.gz
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python -m adaymemur --out ../_site --content ../content
+
+      - name: Web sayfalarını ekle
+        env:
+          DESTEK: ${{ vars.SUPPORT_EMAIL }}
+        run: |
+          cp -r web/. _site/
+          touch _site/.nojekyll
+          if [ -n "$DESTEK" ]; then
+            sed -i "s/__DESTEK_EPOSTA__/${DESTEK}/g" _site/*.html
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4

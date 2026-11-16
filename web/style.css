@@ -1,0 +1,23 @@
+:root{--paper:#F4F6F9;--sheet:#FFFFFF;--ink:#1B1E23;--ink-2:#4A505B;--ink-3:#767D89;--line:#E3E7ED;--form-2:#E4EAF2;--form-ink:#335C8C;--marker:#FFE45A;--on-marker:#1B1E23}
+@media (prefers-color-scheme:dark){:root{--paper:#0F1115;--sheet:#171A1F;--ink:#ECEEF1;--ink-2:#B5BBC5;--ink-3:#8A919D;--line:#262B33;--form-2:#1F242C;--form-ink:#96B8DE;--marker:#F1D23A;--on-marker:#15171B}}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 "Archivo","Helvetica Neue",Arial,sans-serif}
+a{color:var(--form-ink);font-weight:600}
+.wrap{max-width:760px;margin:0 auto;padding:28px 20px 64px}
+header.site{display:flex;align-items:center;gap:12px;margin-bottom:36px}
+header.site img{width:40px;height:40px;border-radius:10px}
+header.site a{color:var(--ink);text-decoration:none;font-weight:800;font-size:18px}
+h1{font-size:clamp(30px,6vw,46px);line-height:1.08;letter-spacing:-.02em;margin:.2em 0 .4em;font-weight:800}
+h2{font-size:20px;margin:2em 0 .5em;letter-spacing:-.01em}
+h3{font-size:16px;margin:1.4em 0 .3em}
+p,li{color:var(--ink-2)}
+.mark{background:linear-gradient(transparent 52%,var(--marker) 52%,var(--marker) 92%,transparent 92%);color:var(--ink);padding:0 .08em}
+.card{background:var(--sheet);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin:16px 0}
+.note{background:var(--form-2);border-radius:12px;padding:14px 16px;font-size:14px;color:var(--ink-2)}
+.btn{display:inline-block;background:var(--marker);color:var(--on-marker);text-decoration:none;font-weight:800;padding:14px 22px;border-radius:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.grid .card{margin:0}
+.grid h3{margin-top:0}
+table{border-collapse:collapse;width:100%;font-size:14px}td,th{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;vertical-align:top}th{color:var(--ink)}
+footer{margin-top:56px;font-size:13px;color:var(--ink-3);border-top:1px solid var(--line);padding-top:20px}
+footer a{color:var(--ink-3)}

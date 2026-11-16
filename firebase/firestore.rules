@@ -1,0 +1,71 @@
+rules_version = '2';
+// Aday Memur — forum güvenlik kuralları
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function girisli() { return request.auth != null; }
+    function ben(uid) { return girisli() && request.auth.uid == uid; }
+    function metin(s, min, max) { return s is string && s.size() >= min && s.size() <= max; }
+    function yalnizca(alanlar) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(alanlar); }
+    function raporId(hedef) { return request.auth.uid + '_' + hedef; }
+
+    match /kullanicilar/{uid} {
+      allow read: if ben(uid);
+      allow create, update: if ben(uid) && metin(request.resource.data.ad, 2, 30);
+      allow delete: if ben(uid);
+    }
+
+    match /konular/{konuId} {
+      allow read: if true;
+      allow create: if girisli()
+        && request.resource.data.yazarId == request.auth.uid
+        && metin(request.resource.data.baslik, 8, 140)
+        && metin(request.resource.data.metin, 10, 4000)
+        && request.resource.data.kategori in ['KPSS', 'Atama', 'Tayin', 'Maaş', 'Mülakat', 'Genel']
+        && request.resource.data.yorumSayisi == 0
+        && request.resource.data.raporSayisi == 0
+        && request.resource.data.gizli == false;
+      // Yazar kendi konusunu silebilir
+      allow delete: if girisli() && resource.data.yazarId == request.auth.uid;
+      // Herkes yalnızca sayaçları güncelleyebilir (yanıt yazınca / raporlayınca)
+      allow update: if girisli() && (
+        (yalnizca(['yorumSayisi', 'sonHareket'])
+          && request.resource.data.yorumSayisi >= resource.data.yorumSayisi - 1
+          && request.resource.data.yorumSayisi <= resource.data.yorumSayisi + 1)
+        || (yalnizca(['raporSayisi'])
+          && request.resource.data.raporSayisi == resource.data.raporSayisi + 1
+          && !exists(/databases/$(database)/documents/raporlar/$(raporId('konular_' + konuId)))
+          && existsAfter(/databases/$(database)/documents/raporlar/$(raporId('konular_' + konuId))))
+      );
+
+      match /yorumlar/{yorumId} {
+        allow read: if true;
+        allow create: if girisli()
+          && request.resource.data.yazarId == request.auth.uid
+          && metin(request.resource.data.metin, 2, 2000)
+          && request.resource.data.raporSayisi == 0
+          && request.resource.data.gizli == false;
+        allow delete: if girisli() && resource.data.yazarId == request.auth.uid;
+        allow update: if girisli()
+          && yalnizca(['raporSayisi'])
+          && request.resource.data.raporSayisi == resource.data.raporSayisi + 1
+          && !exists(/databases/$(database)/documents/raporlar/$(raporId('konular_' + konuId + '_yorumlar_' + yorumId)))
+          && existsAfter(/databases/$(database)/documents/raporlar/$(raporId('konular_' + konuId + '_yorumlar_' + yorumId)));
+      }
+    }
+
+    // Raporlar yalnızca moderatör (Firebase konsolu) tarafından okunur; kullanıcı kendi raporunu silebilir
+    match /raporlar/{rid} {
+      allow create: if girisli()
+        && request.resource.data.raporlayan == request.auth.uid
+        && rid.matches(request.auth.uid + '_.*')
+        && metin(request.resource.data.sebep, 2, 60);
+      allow read, delete: if girisli() && resource.data.raporlayan == request.auth.uid;
+    }
+
+    // Hesap silinirken kullanıcının tüm yorumlarını bulmak için
+    match /{yol=**}/yorumlar/{yorumId} {
+      allow read: if true;
+    }
+  }
+}
