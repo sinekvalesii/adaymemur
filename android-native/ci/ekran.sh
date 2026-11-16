@@ -11,7 +11,7 @@ adb shell pm grant $PKG android.permission.POST_NOTIFICATIONS || true
 adb shell settings put system time_12_24 24
 adb shell am start -n $ACT; cek 01-karsilama 10
 adb shell am force-stop $PKG
-adb shell am start -n $ACT --ez atla true --ei sekme 0; cek 02-ilanlar 18
+adb shell am start -n $ACT --ez atla true --ei sekme 0 --es siralama sonGun; cek 02-ilanlar 18
 ID=$(curl -s https://sinekvalesii.github.io/adaymemur/data/ilanlar.json | python3 -c "
 import sys,json
 d=json.load(sys.stdin)['ilanlar']
@@ -22,11 +22,14 @@ adb shell am force-stop $PKG
 adb shell am start -n $ACT --ez demoPro true --ez demoProfil true --ei sekme 1; cek 03-bana-uygun 15
 adb shell am start -n $ACT --es ilanId "$ID"; cek 04-detay 8
 adb shell input swipe 540 1700 540 700 400; cek 05-detay-uygunluk 3
-adb shell am start -n $ACT --ei sekme 0 --es rota filtre; cek 06-filtre 4
-adb shell am start -n $ACT --ei sekme 0 --es rota gundem; cek 07-gundem 4
+adb shell am start -n $ACT --es rota filtre; cek 06-filtre 4
+adb shell input keyevent KEYCODE_BACK; sleep 1
+adb shell am start -n $ACT --es rota gundem; cek 07-gundem 4
+adb shell input keyevent KEYCODE_BACK; sleep 1
 adb shell am start -n $ACT --ei sekme 3; cek 08-hesap 3
 adb shell cmd uimode night yes
 adb shell am force-stop $PKG
 adb shell am start -n $ACT --ez demoPro true --ei sekme 0; cek 09-koyu-ilanlar 14
+adb shell am start -n $ACT --es ilanId "$ID"; cek 10-koyu-detay 6
 adb logcat -d -s AndroidRuntime:E > $OUT/cokme.txt || true
 ls -la $OUT

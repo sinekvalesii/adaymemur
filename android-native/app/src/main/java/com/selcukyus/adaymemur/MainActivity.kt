@@ -82,9 +82,10 @@ class MainActivity : ComponentActivity() {
         if (i.hasExtra("sekme")) bekleyenSekme.value = i.getIntExtra("sekme", 0)
         if (i.getBooleanExtra("demoPro", false)) Pro.testPro()
         if (i.getBooleanExtra("demoProfil", false)) Depo.profil.guncelle {
-            com.selcukyus.adaymemur.data.Profil("lisans", "İşletme", mapOf("P3" to 76.4), emptyList(), true)
+            com.selcukyus.adaymemur.data.Profil("lisans", "", mapOf("P3" to 76.4), emptyList(), true)
         }
         i.getStringExtra("rota")?.let { bekleyenRota.value = it }
+        i.getStringExtra("siralama")?.let { s -> Depo.filtre.guncelle { it.copy(siralama = s) } }
     }
     private val bekleyenRota = MutableStateFlow<String?>(null)
     private val izin = registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
