@@ -66,10 +66,10 @@ fun kpssEtiketi(i: Ilan): String? {
 fun KurumLogo(ilan: Ilan, boyut: Int = 34) {
     val p = T.p
     Box(Modifier.size(boyut.dp).clip(RoundedCornerShape(9.dp)).background(p.form2), contentAlignment = Alignment.Center) {
-        if (ilan.logo != null) {
+        // Baş harfler her zaman altta; logo yüklenirse üstüne biner, yüklenemezse baş harfler görünür
+        Yazi(kurumKisaltma(ilan.kurum.ifEmpty { ilan.baslik }), boyut = (boyut * 0.36).toInt(), agirlik = FontWeight.Bold, renk = p.formInk)
+        if (ilan.logo != null && ilan.logo.startsWith("http")) {
             AsyncImage(ilan.logo, null, Modifier.size((boyut - 6).dp), contentScale = ContentScale.Fit)
-        } else {
-            Yazi(kurumKisaltma(ilan.kurum.ifEmpty { ilan.baslik }), boyut = (boyut * 0.36).toInt(), agirlik = FontWeight.Bold, renk = p.formInk)
         }
     }
 }
