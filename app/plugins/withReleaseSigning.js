@@ -27,7 +27,7 @@ module.exports = function withReleaseSigning(config) {
     g = g.replace(
       /(buildTypes\s*\{[\s\S]*?release\s*\{[\s\S]*?)signingConfig\s+signingConfigs\.debug/,
       (_m, on) =>
-        `${on}signingConfig (System.getenv("AM_UPLOAD_STORE_FILE") ?: project.findProperty("AM_UPLOAD_STORE_FILE")) ? signingConfigs.release : signingConfigs.debug`,
+        `${on}signingConfig((System.getenv("AM_UPLOAD_STORE_FILE") ?: project.findProperty("AM_UPLOAD_STORE_FILE")) ? signingConfigs.release : signingConfigs.debug)`,
     );
     cfg.modResults.contents = g;
     return cfg;
