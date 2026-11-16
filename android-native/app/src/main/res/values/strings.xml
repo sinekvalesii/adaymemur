@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Aday Memur</string>
+    <string name="kanal_ilan">Yeni ilanlar</string>
+    <string name="kanal_ilan_aciklama">Yeni kamu personel alım ilanı bildirimleri</string>
+</resources>
