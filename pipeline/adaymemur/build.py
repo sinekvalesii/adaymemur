@@ -172,7 +172,7 @@ def run(out_dir: Path, *, state_url: str | None = None, local_state: Path | None
     enriched = 0
     for h in hamlar.values():
         old = prev_ham.get(h.id)
-        if old and old.get("metin"):
+        if old and old.get("metin") and (h.kaynak != "kariyerkapisi" or len(old["metin"]) > 400):
             h.metin = old["metin"]
             h.son_basvuru = h.son_basvuru or old.get("son_basvuru")
             continue
