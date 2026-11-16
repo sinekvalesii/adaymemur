@@ -48,6 +48,15 @@ object Pro : PurchasesUpdatedListener {
 
     fun mesajOkundu() { _mesaj.value = null }
 
+    private var testModu = false
+
+    /** Yalnızca debug derlemede ekran görüntüsü testleri için. */
+    fun testPro() {
+        if (!com.selcukyus.adaymemur.BuildConfig.DEBUG) return
+        testModu = true
+        _pro.value = true
+    }
+
     fun baslat(context: Context) {
         if (::client.isInitialized) return
         prefs = context.getSharedPreferences("aday_memur_pro", Context.MODE_PRIVATE)
@@ -155,6 +164,7 @@ object Pro : PurchasesUpdatedListener {
         aktif.filter { !it.isAcknowledged }.forEach {
             client.acknowledgePurchase(AcknowledgePurchaseParams.newBuilder().setPurchaseToken(it.purchaseToken).build()) { }
         }
+        if (testModu) return
         val onceki = _pro.value
         _pro.value = aktif.isNotEmpty()
         prefs.edit { putBoolean("pro", _pro.value) }

@@ -80,7 +80,13 @@ class MainActivity : ComponentActivity() {
         if (!BuildConfig.DEBUG || i == null) return
         if (i.getBooleanExtra("atla", false)) Depo.ayarlar.guncelle { it.copy(karsilamaGoruldu = true) }
         if (i.hasExtra("sekme")) bekleyenSekme.value = i.getIntExtra("sekme", 0)
+        if (i.getBooleanExtra("demoPro", false)) Pro.testPro()
+        if (i.getBooleanExtra("demoProfil", false)) Depo.profil.guncelle {
+            com.selcukyus.adaymemur.data.Profil("lisans", "İşletme", mapOf("P3" to 76.4), emptyList(), true)
+        }
+        i.getStringExtra("rota")?.let { bekleyenRota.value = it }
     }
+    private val bekleyenRota = MutableStateFlow<String?>(null)
     private val izin = registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
     private fun bildirimIzniIste() {
@@ -97,7 +103,7 @@ class MainActivity : ComponentActivity() {
         Reklam.baslat(this)
         setContent {
             AdayMemurTema {
-                Uygulama(bekleyenIlan, bekleyenSekme, ::bildirimIzniIste)
+                Uygulama(bekleyenIlan, bekleyenSekme, bekleyenRota, ::bildirimIzniIste)
             }
         }
     }
@@ -136,7 +142,7 @@ private val SEKMELER = listOf(
 )
 
 @Composable
-private fun Uygulama(bekleyenIlan: MutableStateFlow<String?>, bekleyenSekme: MutableStateFlow<Int?>, bildirimIzniIste: () -> Unit) {
+private fun Uygulama(bekleyenIlan: MutableStateFlow<String?>, bekleyenSekme: MutableStateFlow<Int?>, bekleyenRota: MutableStateFlow<String?>, bildirimIzniIste: () -> Unit) {
     val p = T.p
     val nav = rememberNavController()
     var sekme by remember { mutableIntStateOf(0) }
@@ -151,6 +157,8 @@ private fun Uygulama(bekleyenIlan: MutableStateFlow<String?>, bekleyenSekme: Mut
 
     LaunchedEffect(proMesaj) { proMesaj?.let { bildir(it); Pro.mesajOkundu() } }
     LaunchedEffect(ilanId) { ilanId?.let { git.ilan(it); bekleyenIlan.value = null } }
+    val rota by bekleyenRota.collectAsState()
+    LaunchedEffect(rota) { rota?.let { nav.navigate(it); bekleyenRota.value = null } }
     val sekmeIstegi by bekleyenSekme.collectAsState()
     LaunchedEffect(sekmeIstegi) {
         sekmeIstegi?.let {
