@@ -12,7 +12,7 @@ from email.utils import parsedate_to_datetime
 import requests
 
 from ..models import Ham, SourceError
-from ..text import clean
+from ..text import clean, tr_title
 
 LABEL = "Kariyer Kapısı"
 FEEDS = ["https://kariyerkapisi.gov.tr/RSS", "https://kariyerkapisi.gov.tr/XMLs/ilanlar.xml"]
@@ -40,11 +40,13 @@ def parse_feed(content: bytes) -> list[Ham]:
             im = re.search(r'<img[^>]+src="([^"]+)"', it.findtext("description") or "")
             logo = im.group(1) if im else None
         kurum, baslik = (title.split(" - ", 1) + [""])[:2] if " - " in title else ("", title)
+        aciklama = clean(re.sub(r"<[^>]+>", " ", it.findtext("description") or ""))
         out.append(Ham(
-            kaynak="kariyerkapisi", kid=guid, baslik=baslik or title, kurum=kurum,
+            kaynak="kariyerkapisi", kid=guid, baslik=baslik or title, kurum=tr_title(kurum),
             url=link or f"https://kariyerkapisi.gov.tr/isealim/ilan?i={guid}",
             kategori=clean(it.findtext("category")), yayin=yayin, logo=logo,
-            metin=clean(re.sub(r"<[^>]+>", " ", it.findtext("description") or "")),
+            # Kısa RSS açıklaması tam metin sayılmaz: uygulama tam metni cihazdan çeker
+            metin=aciklama if len(aciklama) > 400 else "",
         ))
     return out
 
