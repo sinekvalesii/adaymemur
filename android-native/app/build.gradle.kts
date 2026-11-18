@@ -24,7 +24,7 @@ android {
 
         // Yayın ayarları — boş bırakılan özellik uygulamada görünmez
         buildConfigField("String", "SITE_URL", "\"https://sinekvalesii.github.io/adaymemur\"")
-        buildConfigField("String", "DESTEK_EPOSTA", "\"\"")
+        buildConfigField("String", "DESTEK_EPOSTA", "\"selcukyuss@gmail.com\"")
         buildConfigField("String", "ADMOB_BANNER_ID", "\"\"")
         buildConfigField("int", "ERKEN_ERISIM_DK", "60")
         buildConfigField("int", "UCRETSIZ_KAYIT_LIMITI", "10")
