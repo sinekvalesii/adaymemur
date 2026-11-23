@@ -129,6 +129,8 @@ private class NavGezgin(private val nav: NavHostController, private val sekmeSec
     override fun gundem() = nav.navigate("gundem")
     override fun hakkinda() = nav.navigate("hakkinda")
     override fun bildirimIlleri() = nav.navigate("bildirim-illeri")
+    override fun giris() = nav.navigate("giris") { launchSingleTop = true }
+    override fun kayit() = nav.navigate("kayit") { launchSingleTop = true }
     override fun ilanlarSekmesi() = sekmeSec(0)
     override fun geri() { if (!nav.popBackStack()) Unit }
 }
@@ -190,7 +192,7 @@ private fun Uygulama(bekleyenIlan: MutableStateFlow<String?>, bekleyenSekme: Mut
                             0 -> IlanlarEkrani(git, bildir)
                             1 -> UygunEkrani(git, bildir)
                             2 -> KayitliEkrani(git, bildir)
-                            else -> HesapEkrani(git, bildirimIzniIste)
+                            else -> HesapEkrani(git, bildirimIzniIste, bildir)
                         }
                     }
                     ReklamAlani()
@@ -217,6 +219,8 @@ private fun Uygulama(bekleyenIlan: MutableStateFlow<String?>, bekleyenSekme: Mut
             composable("gundem") { GundemEkrani(git) }
             composable("hakkinda") { HakkindaEkrani(git) }
             composable("bildirim-illeri") { BildirimIlleriEkrani(git) }
+            composable("giris") { com.selcukyus.adaymemur.ui.screens.GirisEkrani(git, bildir) }
+            composable("kayit") { com.selcukyus.adaymemur.ui.screens.GirisEkrani(git, bildir, kayitModu = true) }
         }
     }
 }

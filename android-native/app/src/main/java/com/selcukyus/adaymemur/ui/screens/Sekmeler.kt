@@ -216,7 +216,7 @@ fun KayitliEkrani(git: Gezgin, bildir: (String) -> Unit) {
 
 // --- Hesap ------------------------------------------------------------------------
 @Composable
-fun HesapEkrani(git: Gezgin, bildirimIzniIste: () -> Unit) {
+fun HesapEkrani(git: Gezgin, bildirimIzniIste: () -> Unit, bildir: (String) -> Unit = {}) {
     val p = T.p
     val ctx = LocalContext.current
     val pro by Pro.pro.collectAsState()
@@ -247,6 +247,8 @@ fun HesapEkrani(git: Gezgin, bildirimIzniIste: () -> Unit) {
                 tarayicidaAc(ctx, "https://play.google.com/store/account/subscriptions?package=${ctx.packageName}")
             }, Modifier.padding(top = 10.dp).fillMaxWidth(), tur = ButonTur.IKINCIL)
         }
+
+        HesapBolumu(git, bildir)
 
         Grup("Profil") { Satir(Icons.Outlined.School, "Öğrenim ve KPSS bilgilerim", profilOzet, onClick = git::profil) }
 

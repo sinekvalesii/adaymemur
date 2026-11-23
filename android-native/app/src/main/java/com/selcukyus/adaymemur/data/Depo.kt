@@ -70,7 +70,7 @@ object Depo {
 
     private val kilit = Mutex()
     private val metinler = HashMap<String, String>()
-    private val DATA = "${BuildConfig.SITE_URL}/data"
+    private val DATA = "${BuildConfig.DATA_URL}/data"
 
     fun baslat(context: Context) {
         if (::app.isInitialized) return

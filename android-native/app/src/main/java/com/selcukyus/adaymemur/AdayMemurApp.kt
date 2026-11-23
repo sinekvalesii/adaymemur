@@ -10,6 +10,7 @@ class AdayMemurApp : Application() {
         super.onCreate()
         Depo.baslat(this)
         Pro.baslat(this)
+        com.selcukyus.adaymemur.data.Hesap.baslat(this)
         IlanIscisi.kanalOlustur(this)
         IlanIscisi.planla(this)
     }

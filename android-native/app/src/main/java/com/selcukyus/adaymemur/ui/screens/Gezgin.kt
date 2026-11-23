@@ -9,6 +9,8 @@ interface Gezgin {
     fun gundem()
     fun hakkinda()
     fun bildirimIlleri()
+    fun giris()
+    fun kayit()
     fun ilanlarSekmesi()
     fun geri()
 }

@@ -223,6 +223,7 @@ fun Girdi(
     ikon: ImageVector? = null,
     klavye: KeyboardOptions = KeyboardOptions.Default,
     cokSatir: Boolean = false,
+    sifre: Boolean = false,
 ) {
     val p = T.p
     Column(modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -235,6 +236,7 @@ fun Girdi(
             leadingIcon = ikon?.let { { Icon(it, null, tint = p.ink3) } },
             singleLine = !cokSatir,
             keyboardOptions = klavye,
+            visualTransformation = if (sifre) androidx.compose.ui.text.input.PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
             textStyle = yazi(16, renk = p.ink),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(

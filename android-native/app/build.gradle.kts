@@ -19,11 +19,13 @@ android {
         applicationId = "com.selcukyus.adaymemur"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 3
+        versionName = "1.1.0"
 
         // Yayın ayarları — boş bırakılan özellik uygulamada görünmez
         buildConfigField("String", "SITE_URL", "\"https://sinekvalesii.github.io/adaymemur\"")
+        // İlan verisi: 15 dakikada bir güncellenen site
+        buildConfigField("String", "DATA_URL", "\"https://sinekvalesii.github.io/adaymemurweb\"")
         buildConfigField("String", "SUPABASE_URL", "\"https://hnoomaavdayjrhthohnj.supabase.co\"")
         buildConfigField("String", "SUPABASE_KEY", "\"sb_publishable_YOrBA_yuUG0-2ggXPZ8EVQ_7MxM3tme\"")
         buildConfigField("String", "DESTEK_EPOSTA", "\"selcukyuss@gmail.com\"")

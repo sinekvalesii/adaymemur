@@ -43,7 +43,7 @@ class IlanIscisi(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         if (!ayar.bildirim || !izinVar(applicationContext)) return Result.success()
         val pro = applicationContext.getSharedPreferences("aday_memur_pro", Context.MODE_PRIVATE).getBoolean("pro", false)
         val yanit = runCatching {
-            json.decodeFromString(IlanlarYanit.serializer(), Depo.indir("${BuildConfig.SITE_URL}/data/ilanlar.json"))
+            json.decodeFromString(IlanlarYanit.serializer(), Depo.indir("${BuildConfig.DATA_URL}/data/ilanlar.json"))
         }.getOrElse { return Result.retry() }
 
         val bilinen = Depo.bildirilenler()
