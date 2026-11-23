@@ -24,6 +24,7 @@ import com.selcukyus.adaymemur.R
 import com.selcukyus.adaymemur.data.Bicim
 import com.selcukyus.adaymemur.data.Depo
 import com.selcukyus.adaymemur.data.IlanlarYanit
+import com.selcukyus.adaymemur.data.Takipler
 import com.selcukyus.adaymemur.data.json
 import java.time.LocalDate
 import java.time.LocalTime
@@ -31,7 +32,7 @@ import java.util.concurrent.TimeUnit
 
 /**
  * Arka planda ilan listesini kontrol eder:
- *  - Pro: yeni ilan çıktığında (il tercihine göre) bildirim
+ *  - Pro: profile/takibe uyan yeni ilan çıktığı anda bildirim; başvurusu açılmamış ilanlar açılınca bildirim
  *  - Ücretsiz: her akşam 19:00'dan sonra günün yeni ilanlarının özeti
  */
 class IlanIscisi(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
@@ -54,14 +55,30 @@ class IlanIscisi(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         val yeniler = yanit.ilanlar.filter { it.id !in bilinen && (Bicim.kalanGun(it.sonBasvuru) ?: 0) >= 0 }
 
         if (pro) {
-            val iller = ayar.bildirimIlleri
-            val uygun = yeniler.filter { iller.isEmpty() || it.iller.isEmpty() || it.iller.any { i -> i in iller } }
-            uygun.take(5).forEach { i ->
+            val profil = Depo.profil.deger
+            val bugun = LocalDate.now().toString()
+            val ilgili = yeniler.filter { Takipler.ilgili(it, profil, ayar) }
+            var acilis = ayar.acilisTakip
+            ilgili.take(5).forEach { i ->
                 val kadro = i.kadro?.let { "${Bicim.sayi(it)} kadro · " } ?: ""
-                val govde = kadro + (i.sonBasvuru?.let { "Son başvuru ${Bicim.uzun(it)}" } ?: i.kurum)
-                goster(applicationContext, i.id.hashCode(), "${i.kurum.ifEmpty { "Yeni ilan" }}: ${i.baslik}", govde, i.id)
+                val acilmadi = Takipler.basvuruAcilmadi(i)
+                val govde = kadro + when {
+                    acilmadi -> "Başvurular ${Bicim.uzun(i.basvuruBaslangic!!)} tarihinde açılıyor; açılınca haber vereceğiz."
+                    i.sonBasvuru != null -> "Son başvuru ${Bicim.uzun(i.sonBasvuru)}"
+                    else -> i.kurum
+                }
+                goster(applicationContext, i.id.hashCode(), "Sana uygun yeni ilan: ${i.baslik}", govde, i.id)
+                if (acilmadi) acilis = acilis + (i.id to i.basvuruBaslangic!!)
             }
-            if (uygun.size > 5) goster(applicationContext, 7001, "${uygun.size} yeni kamu ilanı", "Tümünü görmek için dokun", null)
+            if (ilgili.size > 5) goster(applicationContext, 7001, "${ilgili.size} yeni ilan sana uygun", "Tümünü görmek için dokun", null)
+            // Başvurusu açılan takipli ilanlar
+            val acilan = acilis.filter { (_, bas) -> bas <= bugun }
+            acilan.keys.forEach { id ->
+                val i = yanit.ilanlar.firstOrNull { it.id == id } ?: return@forEach
+                goster(applicationContext, ("acilis" + id).hashCode(), "Başvurular açıldı: ${i.baslik}",
+                    "${i.kurum}${i.sonBasvuru?.let { " · Son başvuru ${Bicim.uzun(it)}" } ?: ""}", i.id)
+            }
+            if (acilis != ayar.acilisTakip || acilan.isNotEmpty()) Depo.ayarlar.guncelle { it.copy(acilisTakip = acilis - acilan.keys) }
             Depo.bildirilenKaydet(bilinen + yeniler.map { it.id })
         } else {
             val bugun = LocalDate.now().toString()
@@ -91,10 +108,10 @@ class IlanIscisi(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         }
 
         fun planla(ctx: Context) {
-            val is_ = PeriodicWorkRequestBuilder<IlanIscisi>(1, TimeUnit.HOURS)
+            val is_ = PeriodicWorkRequestBuilder<IlanIscisi>(15, TimeUnit.MINUTES)
                 .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
                 .build()
-            WorkManager.getInstance(ctx).enqueueUniquePeriodicWork("ilan-kontrol", ExistingPeriodicWorkPolicy.KEEP, is_)
+            WorkManager.getInstance(ctx).enqueueUniquePeriodicWork("ilan-kontrol", ExistingPeriodicWorkPolicy.UPDATE, is_)
         }
 
         fun izinVar(ctx: Context) = Build.VERSION.SDK_INT < 33 ||

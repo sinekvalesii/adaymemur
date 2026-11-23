@@ -1,5 +1,10 @@
 package com.selcukyus.adaymemur.ui.screens
 
+import androidx.compose.material3.Text
+import androidx.compose.material3.OutlinedTextField
+import com.selcukyus.adaymemur.data.Takipler
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -328,7 +333,9 @@ fun ProEkrani(git: Gezgin) {
     val sec: Paket? = paketler?.firstOrNull { it.urunId == secili }
     val avantajlar = listOf(
         Triple(Icons.Outlined.TrackChanges, "Sana özel ilan listesi", "Öğrenim, bölüm, KPSS puanı ve il tercihine göre başvurabileceğin ilanlar; her biri için neden uygun olduğu."),
-        Triple(Icons.Outlined.NotificationsNone, "Anında bildirim", "Yeni ilan çıktığında, seçtiğin illere göre. Ücretsiz planda günlük özet gelir."),
+        Triple(Icons.Outlined.NotificationsNone, "Anında bildirim ve e-posta", "Sana uygun ilan yayına girer girmez bildirim ve e-posta. Ücretsiz planda günlük özet gelir."),
+        Triple(Icons.Outlined.Schedule, "Başvuru açılınca haber", "Başvurusu henüz açılmamış ilan, başvurular açıldığı anda bildirilir."),
+        Triple(Icons.Outlined.TrackChanges, "Benzer ilan takibi", "Bir ilandaki unvanları takip et; benzer ilanlar çıkınca haber al."),
         Triple(Icons.Outlined.Schedule, "Erken erişim", "Yeni ilanları herkesten ${BuildConfig.ERKEN_ERISIM_DK} dakika önce gör."),
         Triple(Icons.Outlined.BookmarkBorder, "Sınırsız kayıt", "Ücretsiz planda ${BuildConfig.UCRETSIZ_KAYIT_LIMITI} ilan; Pro’da sınırsız."),
         Triple(Icons.Outlined.Shield, "Reklamsız", "Uygulamanın her yerinde reklamsız kullanım."),
@@ -503,13 +510,28 @@ fun BildirimIlleriEkrani(git: Gezgin) {
     val mevcut by Depo.ayarlar.akis.collectAsState()
     var secim by remember { mutableStateOf(mevcut.bildirimIlleri) }
     var ara by remember { mutableStateOf("") }
+    var eposta by remember { mutableStateOf(mevcut.eposta) }
+    val kapsam = rememberCoroutineScope()
     Column(Modifier.fillMaxSize().background(T.p.paper)) {
-        AltBaslik("Bildirim illeri", git::geri)
+        AltBaslik("Bildirim ayarları", git::geri)
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Yazi("En fazla 5 il seçebilirsin. Türkiye geneli kadro açan ilanlar her durumda bildirilir. Hiç seçmezsen tüm iller için bildirim alırsın.", renk = T.p.ink2)
             IlSecici(secim, ara, { ara = it }, limit = 5) { k -> secim = secim.degistir(k) }
+            Yazi("E-posta bildirimi (Pro)", Modifier.padding(top = 8.dp), agirlik = FontWeight.Bold)
+            Yazi("Sana uygun yeni ilanlar ve takip ettiğin ilanlar e-postana da gelsin. Boş bırakırsan e-posta gönderilmez.", boyut = 14, renk = T.p.ink2)
+            OutlinedTextField(eposta, { eposta = it.trim() }, Modifier.fillMaxWidth(), singleLine = true, placeholder = { Text("ornek@gmail.com") },
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Email))
         }
-        AltCubuk { Buton("Kaydet", { Depo.ayarlar.guncelle { it.copy(bildirimIlleri = secim) }; git.geri() }, Modifier.fillMaxWidth()) }
+        AltCubuk { Buton("Kaydet", {
+            if (eposta.isNotEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(eposta).matches()) return@Buton
+            val proMu = Pro.pro.value
+            Depo.ayarlar.guncelle { it.copy(bildirimIlleri = secim, eposta = if (proMu) eposta else it.eposta) }
+            kapsam.launch {
+                val a = Depo.ayarlar.deger
+                Takipler.bulutaYaz(if (proMu) eposta else "", Depo.profil.deger, a)?.let { t -> Depo.ayarlar.guncelle { it.copy(epostaToken = t) } }
+            }
+            if (!proMu && eposta.isNotEmpty()) git.pro() else git.geri()
+        }, Modifier.fillMaxWidth()) }
     }
 }
 

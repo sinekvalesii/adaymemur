@@ -111,4 +111,19 @@ data class Ayarlar(
     val bildirim: Boolean = true,
     val bildirimIlleri: List<String> = emptyList(),
     val goruldu: Set<String> = emptySet(),
+    /** Pro: "Benzer ilanlar çıkınca haber al" takipleri */
+    val takipler: List<Takip> = emptyList(),
+    /** Pro: başvurusu henüz açılmamış ilanlar → ilanId to başvuru başlangıç tarihi */
+    val acilisTakip: Map<String, String> = emptyMap(),
+    /** Pro: e-posta bildirimi */
+    val eposta: String = "",
+    val epostaToken: String = "",
+)
+
+@Serializable
+data class Takip(
+    val id: String,
+    val unvanlar: List<String> = emptyList(),
+    val kurum: String = "",
+    val profilIlleri: Boolean = true,
 )

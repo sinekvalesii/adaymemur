@@ -24,6 +24,8 @@ android {
 
         // Yayın ayarları — boş bırakılan özellik uygulamada görünmez
         buildConfigField("String", "SITE_URL", "\"https://sinekvalesii.github.io/adaymemur\"")
+        buildConfigField("String", "SUPABASE_URL", "\"https://hnoomaavdayjrhthohnj.supabase.co\"")
+        buildConfigField("String", "SUPABASE_KEY", "\"sb_publishable_YOrBA_yuUG0-2ggXPZ8EVQ_7MxM3tme\"")
         buildConfigField("String", "DESTEK_EPOSTA", "\"selcukyuss@gmail.com\"")
         buildConfigField("String", "ADMOB_BANNER_ID", "\"\"")
         buildConfigField("int", "ERKEN_ERISIM_DK", "60")

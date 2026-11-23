@@ -233,6 +233,8 @@ fun DetayEkrani(id: String, git: Gezgin, bildir: (String) -> Unit) {
                 }
             }
 
+            TakipKartlari(ilan, pro, git::pro, bildir)
+
             if (ilan.unvanlar.isNotEmpty()) {
                 Yazi("Kadrolar", Modifier.padding(top = 24.dp, bottom = 8.dp), boyut = 16, agirlik = FontWeight.Bold)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
