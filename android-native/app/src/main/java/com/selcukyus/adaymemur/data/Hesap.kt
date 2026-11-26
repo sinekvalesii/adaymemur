@@ -63,6 +63,8 @@ object Hesap {
 
     class Hata(m: String) : Exception(m)
 
+    @Volatile private var ilkGecti = false
+
     @OptIn(FlowPreview::class)
     fun baslat(context: Context) {
         if (::prefs.isInitialized) return
@@ -70,8 +72,12 @@ object Hesap {
         _oturum.value = prefs.getString("oturum", null)?.let { runCatching { json.decodeFromString(Oturum.serializer(), it) }.getOrNull() }
         // Profil veya takipler değişince buluta yaz
         kapsam.launch {
-            combine(Depo.profil.akis, Depo.ayarlar.akis) { p, a -> Triple(p, a.takipler, a.acilisTakip.keys) }
-                .drop(1).debounce(1500).collect { if (_oturum.value != null) runCatching { profilYaz() } }
+            combine(Depo.profil.akis, Depo.ayarlar.akis, com.selcukyus.adaymemur.billing.Pro.pro) { p, a, pro -> listOf(p, a.takipler, a.acilisTakip.keys, a.bildirim, a.bildirimIlleri, pro) }
+                .debounce(1500).collect {
+                    com.selcukyus.adaymemur.notify.Cihaz.guncelle(context.applicationContext)
+                    if (ilkGecti && _oturum.value != null) runCatching { profilYaz() }
+                    ilkGecti = true
+                }
         }
         kapsam.launch { if (_oturum.value != null) runCatching { profilCek() } }
     }

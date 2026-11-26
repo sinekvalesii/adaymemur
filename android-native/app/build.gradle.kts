@@ -7,6 +7,11 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
+// Firebase (anında bildirim): app/google-services.json varsa etkinleşir; yoksa derleme yine çalışır.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+}
+
 // İmza: proje kökünde keystore.properties varsa release otomatik imzalanır (örnek: keystore.properties.example)
 val keystoreFile = rootProject.file("keystore.properties")
 val keystoreProps = Properties().apply { if (keystoreFile.exists()) keystoreFile.inputStream().use { load(it) } }
@@ -34,7 +39,7 @@ android {
         buildConfigField("int", "UCRETSIZ_KAYIT_LIMITI", "10")
         // AdMob uygulama kimliği: şimdilik Google'ın resmî TEST kimliği (reklam birimi boşken reklam çıkmaz)
         // AdMob uygulama kimliği: gradle.properties içinde ADMOB_APP_ID=ca-app-pub-...~... ; yoksa Google test kimliği
-        manifestPlaceholders["admobAppId"] = (project.findProperty("ADMOB_APP_ID") as String?) ?: "ca-app-pub-3940256099942544~3347511713"
+        manifestPlaceholders["admobAppId"] = (project.findProperty("ADMOB_APP_ID") as String?) ?: "ca-app-pub-4294846689001509~1860286583"
     }
 
     signingConfigs {
@@ -107,4 +112,6 @@ dependencies {
     implementation("com.google.android.ump:user-messaging-platform:3.2.0")
     implementation("com.google.android.play:review-ktx:2.0.2")
     implementation("androidx.glance:glance-appwidget:1.1.1")
+    implementation(platform("com.google.firebase:firebase-bom:34.2.0"))
+    implementation("com.google.firebase:firebase-messaging")
 }
