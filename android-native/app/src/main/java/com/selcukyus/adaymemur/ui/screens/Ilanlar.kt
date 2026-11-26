@@ -160,7 +160,7 @@ fun IlanlarEkrani(git: Gezgin, bildir: (String) -> Unit) {
 
 fun kaydet(ilan: com.selcukyus.adaymemur.data.Ilan, pro: Boolean, bildir: (String) -> Unit, git: Gezgin) {
     when (Depo.kaydetDegistir(ilan, pro)) {
-        true -> bildir("İlan kaydedildi")
+        true -> { bildir("İlan kaydedildi"); com.selcukyus.adaymemur.review.Degerlendirme.olumlu() }
         false -> bildir("Kaydedilenlerden çıkarıldı")
         null -> { bildir("Ücretsiz planda ${BuildConfig.UCRETSIZ_KAYIT_LIMITI} ilan kaydedebilirsin"); git.pro() }
     }

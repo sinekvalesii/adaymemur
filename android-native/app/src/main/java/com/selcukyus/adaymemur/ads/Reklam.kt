@@ -28,7 +28,9 @@ object Reklam {
     val hazir = MutableStateFlow(false)
     val gizlilikSecenegi = MutableStateFlow(false)
 
-    fun aktif() = BuildConfig.ADMOB_BANNER_ID.isNotBlank()
+    /** Reklam birimi: önce uzaktan ayar (uygulama.json), yoksa derleme ayarı. */
+    fun birim(): String = com.selcukyus.adaymemur.data.Uzak.ayar.value.reklam.let { if (it.acik) it.banner else "" }.ifBlank { BuildConfig.ADMOB_BANNER_ID }
+    fun aktif() = birim().isNotBlank()
 
     fun baslat(activity: Activity) {
         if (!aktif() || !basladi.compareAndSet(false, true)) return
@@ -60,7 +62,7 @@ fun ReklamAlani(modifier: Modifier = Modifier) {
         factory = { ctx ->
             AdView(ctx).apply {
                 setAdSize(AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(ctx, genislik))
-                adUnitId = BuildConfig.ADMOB_BANNER_ID
+                adUnitId = Reklam.birim()
                 loadAd(AdRequest.Builder().build())
             }
         },

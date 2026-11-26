@@ -100,8 +100,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         testKisayollari(intent)
         bekleyenIlan.value = intent?.getStringExtra("ilanId")
-        lifecycleScope.launch { Depo.yenile() }
-        Reklam.baslat(this)
+        com.selcukyus.adaymemur.review.Degerlendirme.acildi(this)
+        com.selcukyus.adaymemur.review.Degerlendirme.aktivite = java.lang.ref.WeakReference(this)
+        lifecycleScope.launch {
+            Depo.yenile()
+            com.selcukyus.adaymemur.widget.IlanWidget.guncelle(this@MainActivity)
+        }
+        lifecycleScope.launch {
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { com.selcukyus.adaymemur.data.Uzak.yukle() }
+            Reklam.baslat(this@MainActivity)
+        }
         setContent {
             AdayMemurTema {
                 Uygulama(bekleyenIlan, bekleyenSekme, bekleyenRota, ::bildirimIzniIste)

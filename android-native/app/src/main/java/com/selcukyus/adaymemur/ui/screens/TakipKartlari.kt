@@ -71,7 +71,7 @@ fun TakipKartlari(ilan: Ilan, pro: Boolean, proAc: () -> Unit, bildir: (String) 
             Buton(if (takipte) "Açılınca haber verilecek ✓" else "Açılınca haber ver", {
                 if (!pro) return@Buton proAc()
                 Depo.ayarlar.guncelle { it.copy(acilisTakip = if (takipte) it.acilisTakip - ilan.id else it.acilisTakip + (ilan.id to ilan.basvuruBaslangic!!)) }
-                bildir(if (takipte) "Açılış bildirimi kaldırıldı" else "Başvuru açılınca haber vereceğiz")
+                bildir(if (takipte) "Açılış bildirimi kaldırıldı" else "Başvuru açılınca haber vereceğiz").also { if (!takipte) com.selcukyus.adaymemur.review.Degerlendirme.olumlu() }
                 kapsam.launch { epostaTazele() }
             }, Modifier.padding(top = 12.dp).fillMaxWidth(), tur = if (takipte) ButonTur.IKINCIL else ButonTur.ANA)
             if (!pro) Yazi("Aday Memur Pro özelliği", Modifier.padding(top = 6.dp).align(Alignment.CenterHorizontally), boyut = 12, renk = p.ink3)
@@ -96,7 +96,7 @@ fun TakipKartlari(ilan: Ilan, pro: Boolean, proAc: () -> Unit, bildir: (String) 
         Buton(if (mevcut != null) "Bildirim açık ✓ (kapat)" else "Bildirim al", {
             if (!pro) return@Buton proAc()
             Depo.ayarlar.guncelle { a -> a.copy(takipler = if (mevcut != null) a.takipler - mevcut else a.takipler + oneri) }
-            bildir(if (mevcut != null) "Takip kapatıldı" else "Benzer ilanlar çıkınca haber vereceğiz")
+            bildir(if (mevcut != null) "Takip kapatıldı" else "Benzer ilanlar çıkınca haber vereceğiz").also { if (mevcut == null) com.selcukyus.adaymemur.review.Degerlendirme.olumlu() }
             kapsam.launch { epostaTazele() }
         }, Modifier.padding(top = 12.dp).fillMaxWidth(), tur = if (mevcut != null) ButonTur.IKINCIL else ButonTur.ANA)
         if (!pro) Yazi("Aday Memur Pro özelliği", Modifier.padding(top = 6.dp).align(Alignment.CenterHorizontally), boyut = 12, renk = p.ink3)

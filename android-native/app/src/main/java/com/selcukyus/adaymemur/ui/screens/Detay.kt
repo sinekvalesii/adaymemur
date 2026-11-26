@@ -1,5 +1,7 @@
 package com.selcukyus.adaymemur.ui.screens
 
+import com.selcukyus.adaymemur.BuildConfig
+
 import android.content.Intent
 import android.provider.CalendarContract
 import androidx.compose.foundation.background
@@ -117,7 +119,7 @@ fun DetayEkrani(id: String, git: Gezgin, bildir: (String) -> Unit) {
         AltBaslik(geri = git::geri, sag = {
             if (ilan != null) {
                 IconButton(onClick = {
-                    val m = "${if (ilan.kurum.isNotEmpty()) ilan.kurum + " — " else ""}${ilan.baslik}\n${ilan.sonBasvuru?.let { "Son başvuru: ${Bicim.uzun(it)}\n" } ?: ""}${ilan.url}"
+                    val m = "📢 ${ilan.baslik}\n${if (ilan.kurum.isNotEmpty()) "🏛 " + ilan.kurum + "\n" else ""}${ilan.kadro?.let { "👥 $it kadro\n" } ?: ""}${ilan.sonBasvuru?.let { "⏳ Son başvuru: ${Bicim.uzun(it)}\n" } ?: ""}\nİlan ve şartlar: ${BuildConfig.DATA_URL}/#/ilan/${android.net.Uri.encode(ilan.id)}\n\nSana uygun kamu ilanlarını kaçırma — Aday Memur: https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"
                     ctx.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, m), "Paylaş"))
                 }) { Icon(Icons.Default.Share, "Paylaş", tint = p.ink) }
                 IconButton(onClick = { kaydet(ilan, pro, bildir, git) }) {

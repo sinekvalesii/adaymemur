@@ -94,6 +94,7 @@ class IlanIscisi(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
                 Depo.bildirilenKaydet(bilinen + yeniler.map { it.id })
             }
         }
+        com.selcukyus.adaymemur.widget.IlanWidget.guncelle(applicationContext)
         return Result.success()
     }
 

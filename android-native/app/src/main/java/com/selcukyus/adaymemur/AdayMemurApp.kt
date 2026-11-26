@@ -11,6 +11,7 @@ class AdayMemurApp : Application() {
         Depo.baslat(this)
         Pro.baslat(this)
         com.selcukyus.adaymemur.data.Hesap.baslat(this)
+        Thread { com.selcukyus.adaymemur.data.Uzak.yukle() }.start()
         IlanIscisi.kanalOlustur(this)
         IlanIscisi.planla(this)
     }

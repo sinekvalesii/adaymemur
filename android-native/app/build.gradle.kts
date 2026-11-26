@@ -33,7 +33,8 @@ android {
         buildConfigField("int", "ERKEN_ERISIM_DK", "60")
         buildConfigField("int", "UCRETSIZ_KAYIT_LIMITI", "10")
         // AdMob uygulama kimliği: şimdilik Google'ın resmî TEST kimliği (reklam birimi boşken reklam çıkmaz)
-        manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
+        // AdMob uygulama kimliği: gradle.properties içinde ADMOB_APP_ID=ca-app-pub-...~... ; yoksa Google test kimliği
+        manifestPlaceholders["admobAppId"] = (project.findProperty("ADMOB_APP_ID") as String?) ?: "ca-app-pub-3940256099942544~3347511713"
     }
 
     signingConfigs {
@@ -104,4 +105,6 @@ dependencies {
     implementation("com.android.billingclient:billing-ktx:8.0.0")
     implementation("com.google.android.gms:play-services-ads:24.4.0")
     implementation("com.google.android.ump:user-messaging-platform:3.2.0")
+    implementation("com.google.android.play:review-ktx:2.0.2")
+    implementation("androidx.glance:glance-appwidget:1.1.1")
 }
