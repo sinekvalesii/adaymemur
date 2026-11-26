@@ -120,6 +120,10 @@ fun IlanlarEkrani(git: Gezgin, bildir: (String) -> Unit) {
                     }
                 }
                 GundemKarti(git)
+                com.selcukyus.adaymemur.ui.components.Kart(Modifier.fillMaxWidth().padding(top = 10.dp), onClick = git::tercih, zemin = T.p.ink, kenar = T.p.ink) {
+                    Yazi("KPSS tercih asistanı", agirlik = FontWeight.Bold, renk = T.p.marker)
+                    Yazi("Puanınla hangi kadrolara yerleşebilirsin? Taban puanlarla tercih listeni hazırla.", boyut = 14, renk = T.p.paper)
+                }
             }
 
             when {

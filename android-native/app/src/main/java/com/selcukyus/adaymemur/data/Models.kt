@@ -118,6 +118,8 @@ data class Ayarlar(
     /** Pro: e-posta bildirimi */
     val eposta: String = "",
     val epostaToken: String = "",
+    /** KPSS tercih asistanı: tercih listem (dönem|kod), en fazla 30 */
+    val tercihListesi: List<String> = emptyList(),
 )
 
 @Serializable

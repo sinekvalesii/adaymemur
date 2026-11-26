@@ -137,6 +137,7 @@ private class NavGezgin(private val nav: NavHostController, private val sekmeSec
     override fun gundem() = nav.navigate("gundem")
     override fun hakkinda() = nav.navigate("hakkinda")
     override fun bildirimIlleri() = nav.navigate("bildirim-illeri")
+    override fun tercih() = nav.navigate("tercih") { launchSingleTop = true }
     override fun giris() = nav.navigate("giris") { launchSingleTop = true }
     override fun kayit() = nav.navigate("kayit") { launchSingleTop = true }
     override fun ilanlarSekmesi() = sekmeSec(0)
@@ -227,6 +228,7 @@ private fun Uygulama(bekleyenIlan: MutableStateFlow<String?>, bekleyenSekme: Mut
             composable("gundem") { GundemEkrani(git) }
             composable("hakkinda") { HakkindaEkrani(git) }
             composable("bildirim-illeri") { BildirimIlleriEkrani(git) }
+            composable("tercih") { com.selcukyus.adaymemur.ui.screens.TercihEkrani(git, bildir) }
             composable("giris") { com.selcukyus.adaymemur.ui.screens.GirisEkrani(git, bildir) }
             composable("kayit") { com.selcukyus.adaymemur.ui.screens.GirisEkrani(git, bildir, kayitModu = true) }
         }

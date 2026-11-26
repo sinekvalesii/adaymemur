@@ -273,6 +273,7 @@ fun HesapEkrani(git: Gezgin, bildirimIzniIste: () -> Unit, bildir: (String) -> U
         }
 
         Grup("Uygulama") {
+            Satir(Icons.Outlined.School, "KPSS tercih asistanı", "Puanınla yerleşebileceğin kadrolar, tercih listen", onClick = git::tercih)
             Satir(Icons.Outlined.CalendarMonth, "KPSS takvimi ve duyurular", onClick = git::gundem)
             Satir(Icons.Outlined.StarOutline, "Uygulamayı değerlendir", onClick = { tarayicidaAc(ctx, "https://play.google.com/store/apps/details?id=${ctx.packageName}") })
             Satir(Icons.Outlined.Share, "Arkadaşına öner", onClick = {

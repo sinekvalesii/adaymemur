@@ -46,7 +46,8 @@ class Kalici<T>(private val prefs: SharedPreferences, private val anahtar: Strin
 enum class VeriDurumu { YUKLENIYOR, HAZIR, HATA }
 
 object Depo {
-    private lateinit var app: Context
+    lateinit var app: Context
+        private set
     private lateinit var prefs: SharedPreferences
 
     lateinit var profil: Kalici<Profil>

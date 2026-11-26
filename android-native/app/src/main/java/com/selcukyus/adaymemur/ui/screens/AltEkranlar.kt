@@ -332,6 +332,7 @@ fun ProEkrani(git: Gezgin) {
     LaunchedEffect(pro) { if (pro) git.geri() }
     val sec: Paket? = paketler?.firstOrNull { it.urunId == secili }
     val avantajlar = listOf(
+        Triple(Icons.Outlined.TrackChanges, "KPSS tercih asistanı", "Puanınla önceki yerleştirmelerde girilebilen tüm kadrolar ve 30 tercihlik liste."),
         Triple(Icons.Outlined.TrackChanges, "Sana özel ilan listesi", "Öğrenim, bölüm, KPSS puanı ve il tercihine göre başvurabileceğin ilanlar; her biri için neden uygun olduğu."),
         Triple(Icons.Outlined.NotificationsNone, "Anında bildirim ve e-posta", "Sana uygun ilan yayına girer girmez bildirim ve e-posta. Ücretsiz planda günlük özet gelir."),
         Triple(Icons.Outlined.Schedule, "Başvuru açılınca haber", "Başvurusu henüz açılmamış ilan, başvurular açıldığı anda bildirilir."),
