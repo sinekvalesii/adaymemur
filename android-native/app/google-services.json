@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "130493431069",
+    "project_id": "aday-memur",
+    "storage_bucket": "aday-memur.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:130493431069:android:8ba60e2b2acdb895d235f4",
+        "android_client_info": {
+          "package_name": "com.selcukyus.adaymemur"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1yp2VM2R8rWp1BoSnHUpBROE9ptJVonc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
