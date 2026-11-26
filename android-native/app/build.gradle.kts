@@ -24,8 +24,8 @@ android {
         applicationId = "com.selcukyus.adaymemur"
         minSdk = 26
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.1.0"
+        versionCode = 4
+        versionName = "1.2.0"
 
         // Yayın ayarları — boş bırakılan özellik uygulamada görünmez
         buildConfigField("String", "SITE_URL", "\"https://sinekvalesii.github.io/adaymemur\"")
